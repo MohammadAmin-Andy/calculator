@@ -1,5 +1,6 @@
 import 'package:calculator/constances.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(
@@ -51,6 +52,7 @@ Color getTextColor(String text) {
 
 class _CalculatorApplicatonState extends State<CalculatorApplicaton> {
   var inputUser = '';
+  var result = '';
 
   void buttonPressed(String text) {
     setState(() {
@@ -160,7 +162,18 @@ class _CalculatorApplicatonState extends State<CalculatorApplicaton> {
             backgroundColor: getBackgroundColor(text4),
           ),
           onPressed: () {
-            buttonPressed(text4);
+            if (text4 == '=') {
+              Parser parser = Parser();
+              Expression expression = parser.parse(inputUser);
+              ContextModel contextModel = ContextModel();
+              double eval =
+                  expression.evaluate(EvaluationType.REAL, contextModel);
+              setState(() {
+                result = eval.toString();
+              });
+            } else {
+              buttonPressed(text4);
+            }
           },
           child: Padding(
             padding: EdgeInsets.all(3),
@@ -191,17 +204,35 @@ class _CalculatorApplicatonState extends State<CalculatorApplicaton> {
               Expanded(
                 flex: 4,
                 child: Container(
+                  height: 100,
                   color: backgroundGreyDark,
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      '$inputUser',
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                          color: textGreen,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          '$inputUser',
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            color: textGreen,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          result,
+                          style: TextStyle(
+                            color: textGrey,
+                            fontSize: 62,
+                          ),
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
